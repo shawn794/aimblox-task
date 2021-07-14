@@ -1,10 +1,39 @@
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local ModelUtil = require(ReplicatedStorage.Shared.ModelUtil)
+
+local AK47 = ReplicatedStorage.AK47
 
 local function createEvent(eventName: string, callback)
     local e = Instance.new("RemoteEvent")
     e.Name = eventName
     e.OnServerEvent:Connect(callback)
     e.Parent = game.ReplicatedStorage
+end
+
+local function weldWeapon(character: Model, weapon: Model)
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local weld = Instance.new("Weld")
+    weld.Part0 = humanoidRootPart
+    weld.Part1 = weapon.PrimaryPart
+    weld.C0 = humanoidRootPart.CFrame
+    weld.C1 = humanoidRootPart.CFrame
+    weld.Parent = humanoidRootPart
+
+    weapon.Parent = character
+end
+
+local function scaleWeapon(character: Model, scale: number)
+    local weapon = AK47:Clone()
+    print(weapon:GetChildren())
+    weapon.PrimaryPart = weapon:WaitForChild("Body")
+
+    ModelUtil.Unweld(weapon)
+    ModelUtil.Scale(weapon, scale)
+    ModelUtil.Reweld(weapon)
+
+    weldWeapon(character, weapon)
 end
 
 local PlayerService = {}
@@ -29,8 +58,9 @@ function PlayerService:CharacterAdded(player: Player, character: Model)
         print(playerSettings)
         local humanoid: Humanoid = character:WaitForChild("Humanoid")
         humanoid.WalkSpeed = playerSettings.WalkSpeed
-        self:ScaleCharacter(player, character, playerSettings.CharacterScale)
+        -- self:ScaleCharacter(player, character, playerSettings.CharacterScale)
     end)
+    scaleWeapon(character, 1)
 end
 
 function PlayerService:Start(services)

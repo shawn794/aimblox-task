@@ -35,9 +35,10 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string)
             self.open = false
         else
             TweenService:Create(self.holder, TweenInfo.new(0.75), {Position = UDim2.new(0.5, 0, 1, 0)}):Play()
-            local t = TweenService:Create(self.button.Signifier, TweenInfo.new(0.75), {Rotation = 0})
+            local t = TweenService:Create(self.button.Signifier, TweenInfo.new(0.75), {Rotation = 359})
             t:Play()
             t.Completed:Wait()
+            self.button.Signifier.Rotation = 0
             self.open = true
         end
         self.tweening = false

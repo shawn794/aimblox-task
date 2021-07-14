@@ -26,7 +26,6 @@ function UIController:CreateButtons()
             self.panel.SettingsList.Sounds.Button.TextLabel.Text = "OFF"
         end
     end
-    print(self.data.Sounds)
     soundsChange(self.data.Sounds)
     local soundsButton = Button.new(self.panel.SettingsList.Sounds.Button, self.data.Sounds)
     soundsButton.Changed:Connect(function(bool: boolean)
