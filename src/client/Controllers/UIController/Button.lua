@@ -22,6 +22,10 @@ function Button:constructor(buttonFrame: ImageButton, bool: boolean)
     end))
 end
 
+function Button:SetState(bool)
+    self.bool = bool
+end
+
 function Button:Destroy()
     self.janitor:Destroy()
     setmetatable(self, nil)

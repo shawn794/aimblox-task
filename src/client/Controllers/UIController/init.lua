@@ -3,14 +3,22 @@ local Players = game:GetService("Players")
 
 local Slider = require(script.Slider)
 local Button = require(script.Button)
+local Dropdown = require(script.Dropdown)
 
 local Player = Players.LocalPlayer
 
 local UIController = {}
 
+function UIController:CreateDropdowns()
+    local walkspeedDropdown = Dropdown.new(self.panel.SettingsList.WalkspeedDropdown, string.format("%.0f",self.data.WalkSpeed))
+    walkspeedDropdown.ButtonChanged:Connect(function(button)
+        self.settingsController:SetWalkSpeed(tonumber(button))
+    end)
+end
+
 function UIController:CreateButtons()
     local function soundsChange(bool: boolean)
-        if self.data.Sounds then
+        if bool then
             self.panel.SettingsList.Sounds.Button.Overlay.Visible = true
             self.panel.SettingsList.Sounds.Button.TextLabel.Text = "ON"
         else
@@ -18,6 +26,7 @@ function UIController:CreateButtons()
             self.panel.SettingsList.Sounds.Button.TextLabel.Text = "OFF"
         end
     end
+    print(self.data.Sounds)
     soundsChange(self.data.Sounds)
     local soundsButton = Button.new(self.panel.SettingsList.Sounds.Button, self.data.Sounds)
     soundsButton.Changed:Connect(function(bool: boolean)
@@ -42,7 +51,7 @@ function UIController:CreateSliders()
     self.panel.SettingsList.SensitivitySlider.Frame.Level.Text = self.data.InputSens
     local sensitivitySlider = Slider.new(self.panel.SettingsList.SensitivitySlider.Frame.Bar, self.data.InputSens/10)
     sensitivitySlider.Changed:Connect(function(value: number)
-        value = tonumber(string.format("%.2f", value * 10))
+        value = tonumber(string.format("%.0f", value * 10))
         self.panel.SettingsList.SensitivitySlider.Frame.Level.Text = value
     end)
     sensitivitySlider.Finished:Connect(function(value: number)
@@ -68,6 +77,7 @@ function UIController:Start(controllers)
     self.settingsController = controllers.SettingsController
     self:CreateSliders()
     self:CreateButtons()
+    self:CreateDropdowns()
 end
 
 function UIController:Init()

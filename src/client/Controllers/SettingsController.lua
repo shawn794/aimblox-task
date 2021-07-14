@@ -51,6 +51,7 @@ function SettingsController:Init()
     self.data = GetData:InvokeServer()
     self:LocalBrightening(self.data.Brightness)
     Ambient.Playing = self.data.Sounds
+    UserInputService.MouseDeltaSensitivity = self.data.InputSens
 end
 
 return SettingsController

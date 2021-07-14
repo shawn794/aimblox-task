@@ -47,8 +47,8 @@ function PlayerService:Start(services)
     end)
 
     createEvent("WalkSpeedEvent", function(player: Player, speed: number)
-        if speed > 30 then
-            speed = 30
+        if speed > 100 then
+            speed = 100
         end
 
         local humanoid: Humanoid = player.Character:WaitForChild("Humanoid")
