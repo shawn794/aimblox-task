@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 
-local function createEvent(eventName: string, callback: function)
+local function createEvent(eventName: string, callback)
     local e = Instance.new("RemoteEvent")
     e.Name = eventName
     e.OnServerEvent:Connect(callback)
@@ -25,12 +25,12 @@ function PlayerService:ScaleCharacter(player: Player, character: Model, scale: n
 end
 
 function PlayerService:CharacterAdded(player: Player, character: Model)
-    local playerSettings = self.DataService:GetProfile(player)
-    if playerSettings ~= nil then
+    self.DataService:GetProfile(player):andThen(function(playerSettings)
+        print(playerSettings)
         local humanoid: Humanoid = character:WaitForChild("Humanoid")
-        humanoid.WalkSpeed = playerSettings.Walkspeed
+        humanoid.WalkSpeed = playerSettings.WalkSpeed
         self:ScaleCharacter(player, character, playerSettings.CharacterScale)
-    end
+    end)
 end
 
 function PlayerService:Start(services)

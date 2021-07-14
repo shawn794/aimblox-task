@@ -5,10 +5,11 @@ local Shared = game.ReplicatedStorage.Shared
 
 local ProfileService = require(Shared.ProfileService)
 local Settings = require(Shared.Settings)
+local Promise = require(Shared.Promise)
 
 local SettingsStore = ProfileService.GetProfileStore("PlayerData", Settings.DefaultSettings)
 
-local function createRemoteFunction(functionName: string, callback: function)
+local function createRemoteFunction(functionName: string, callback)
     local e = Instance.new("RemoteFunction")
     e.Name = functionName
     e.OnServerInvoke = callback
@@ -18,32 +19,34 @@ end
 local DataService = { Profiles = {} }
 
 function DataService:SetScale(player: Player, scale: number)
-    self.Profiles[player].Profile.CharacterScale = scale
+    self.Profiles[player].Profile.Data.CharacterScale = scale
 end
 
 function DataService:SetWalkSpeed(player: Player, speed: number)
-    self.Profiles[player].Profile.WalkSpeed = speed
+    self.Profiles[player].Profile.Data.WalkSpeed = speed
 end
 
 function DataService:SetInputSens(player: Player, sens: number)
-    self.Profiles[player].Profile.InputSens = sens
+    self.Profiles[player].Profile.Data.InputSens = sens
 end
 
 function DataService:SetBrightness(player: Player, brightness: number)
-    self.Profiles[player].Profile.Brightness = brightness
+    self.Profiles[player].Profile.Data.Brightness = brightness
 end
 
 function DataService:SetSounds(player: Player, bool: boolean)
-    self.Profiles[player].Profile.Sounds = bool
+    self.Profiles[player].Profile.Data.Sounds = bool
 end
 
 function DataService:GetProfile(player: Player)
-    local profile = self.Profiles[player]
-    if profile.Loaded then
-        return profile.Profile
-    else
-        return nil
-    end
+    return Promise.new(function(resolve, reject)
+        local profile = self.Profiles[player]
+        repeat
+            wait()
+            profile = self.Profiles[player]
+        until profile.Loaded == true
+        resolve(profile.Profile.Data)
+    end)
 end
 
 function DataService:PlayerAdded(player: Player)
@@ -80,18 +83,27 @@ function DataService:Init()
         self:PlayerAdded(player)
     end)
 
+    Players.PlayerRemoving:Connect(function(player)
+        local profile = self.Profiles[player]
+        if profile ~= nil and profile.Profile ~= nil then
+            print(profile.Profile)
+            profile.Profile:Release()
+            self.Profiles[player] = nil
+        end
+    end)
+
     createRemoteFunction("GetData", function (player: Player)
         local profile = self:GetProfile(player)
-        if profile.Loaded then
-           return profile.Profile
-        else
-            return nil
-        end
+        repeat
+            wait()
+            profile = self.Profiles[player]
+        until profile.Loaded == true
+        return profile.Profile.Data
     end)
 
     createRemoteFunction("UpdateSettings", function(player: Player, settings: Settings.SettingsType)
         if settings.WalkSpeed and settings.CharacterScale and settings.Brightness and settings.Sounds and settings.InputSens then
-            self.Profiles[player].Profile = settings
+            self.Profiles[player].Profile.Data = settings
         end
     end)
 end
