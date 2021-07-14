@@ -2,10 +2,29 @@ local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 
 local Slider = require(script.Slider)
+local Button = require(script.Button)
 
 local Player = Players.LocalPlayer
 
 local UIController = {}
+
+function UIController:CreateButtons()
+    local function soundsChange(bool: boolean)
+        if self.data.Sounds then
+            self.panel.SettingsList.Sounds.Button.Overlay.Visible = true
+            self.panel.SettingsList.Sounds.Button.TextLabel.Text = "ON"
+        else
+            self.panel.SettingsList.Sounds.Button.Overlay.Visible = false
+            self.panel.SettingsList.Sounds.Button.TextLabel.Text = "OFF"
+        end
+    end
+    soundsChange(self.data.Sounds)
+    local soundsButton = Button.new(self.panel.SettingsList.Sounds.Button, self.data.Sounds)
+    soundsButton.Changed:Connect(function(bool: boolean)
+        soundsChange(bool)
+        self.settingsController:SetSounds(bool)
+    end)
+end
 
 function UIController:CreateSliders()
     self.panel.SettingsList.BrightnessSlider.Frame.Level.Text = self.data.Brightness
@@ -48,6 +67,7 @@ function UIController:Start(controllers)
     self.data = controllers.SettingsController:GetData()
     self.settingsController = controllers.SettingsController
     self:CreateSliders()
+    self:CreateButtons()
 end
 
 function UIController:Init()

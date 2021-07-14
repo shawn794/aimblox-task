@@ -26,18 +26,6 @@ function DataService:SetWalkSpeed(player: Player, speed: number)
     self.Profiles[player].Profile.Data.WalkSpeed = speed
 end
 
-function DataService:SetInputSens(player: Player, sens: number)
-    self.Profiles[player].Profile.Data.InputSens = sens
-end
-
-function DataService:SetBrightness(player: Player, brightness: number)
-    self.Profiles[player].Profile.Data.Brightness = brightness
-end
-
-function DataService:SetSounds(player: Player, bool: boolean)
-    self.Profiles[player].Profile.Data.Sounds = bool
-end
-
 function DataService:GetProfile(player: Player)
     return Promise.new(function(resolve, reject)
         local profile = self.Profiles[player]
@@ -102,7 +90,7 @@ function DataService:Init()
     end)
 
     createRemoteFunction("UpdateSettings", function(player: Player, settings: Settings.SettingsType)
-        if settings.WalkSpeed and settings.CharacterScale and settings.Brightness and settings.Sounds and settings.InputSens then
+        if settings.WalkSpeed and settings.CharacterScale and settings.Brightness and settings.Sounds ~= nil and settings.InputSens then
             self.Profiles[player].Profile.Data = settings
         end
     end)

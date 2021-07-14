@@ -1,9 +1,13 @@
 local Lighting = game:GetService("Lighting")
 local UserInputService = game:GetService("UserInputService")
+local SoundService = game:GetService("SoundService")
+
+local Ambient = SoundService.Ambient
 
 local GetData: RemoteFunction = game.ReplicatedStorage:WaitForChild("GetData")
 local UpdateSettings: RemoteFunction = game.ReplicatedStorage:WaitForChild("UpdateSettings")
 local ScaleEvent: RemoteEvent = game.ReplicatedStorage:WaitForChild("ScaleEvent")
+local WalkSpeedEvent: RemoteEvent = game.ReplicatedStorage:WaitForChild("WalkSpeedEvent")
 
 local SettingsController = {}
 
@@ -24,12 +28,13 @@ end
 
 function SettingsController:SetSounds(s: boolean)
     self.data.Sounds = s
+    Ambient.Playing = s
     UpdateSettings:InvokeServer(self.data)
 end
 
 function SettingsController:SetWalkSpeed(s: number)
     self.data.WalkSpeed = s
-    UpdateSettings:InvokeServer(self.data)
+    WalkSpeedEvent:FireServer(s)
 end
 
 function SettingsController:SetSens(s: number)
@@ -45,6 +50,7 @@ end
 function SettingsController:Init()
     self.data = GetData:InvokeServer()
     self:LocalBrightening(self.data.Brightness)
+    Ambient.Playing = self.data.Sounds
 end
 
 return SettingsController
