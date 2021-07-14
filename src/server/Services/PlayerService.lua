@@ -12,10 +12,9 @@ local function createEvent(eventName: string, callback)
     e.Parent = game.ReplicatedStorage
 end
 
-local function weldWeapon(player: Player, character: Model, weapon: Model)
+local function weldWeapon(character: Model, weapon: Model)
     local upperTorso = character:WaitForChild("UpperTorso")
 
-    
     weapon.PrimaryPart.CFrame = CFrame.new(upperTorso.Position)
     local object = upperTorso.CFrame:ToObjectSpace(weapon.PrimaryPart.CFrame)
     object += Vector3.new(0, 0, upperTorso.Size.Z/2+.1)
@@ -31,14 +30,14 @@ local function weldWeapon(player: Player, character: Model, weapon: Model)
     weld.Part1 = weapon.PrimaryPart
 end
 
-local function scaleWeapon(player: Player, character: Model, scale: number)
+local function scaleWeapon(character: Model, scale: number)
     local weapon = AK47:Clone()
     weapon.PrimaryPart = weapon:WaitForChild("Body")
     weapon.Parent = character
 
     ModelUtil.Scale(weapon, scale)
 
-    weldWeapon(player, character, weapon)
+    weldWeapon(character, weapon)
 end
 
 local PlayerService = {}
@@ -59,7 +58,7 @@ function PlayerService:ScaleCharacter(player: Player, character: Model, scale: n
         character.AK47:Destroy()
     end
 
-    scaleWeapon(player, character, scale)
+    scaleWeapon(character, scale)
 
     self.DataService:SetScale(player, scale)
 end
