@@ -3,15 +3,21 @@ local TweenService = game:GetService("TweenService")
 local Janitor = require(game.ReplicatedStorage.Shared.Janitor)
 local Button = require(script.Parent.Button)
 
+--[[
+    PascalCase methods and variables are public, camelCase methods and variables are private (except for new)
+]]
+
 local Dropdown = {}
 Dropdown.__index = Dropdown
 
+-- Creates a new dropdown wrapper
 function Dropdown.new(dropdownContainer: Frame, defaultChoice: string)
     local self = setmetatable({}, Dropdown)
     self:constructor(dropdownContainer, defaultChoice)
     return self
 end
 
+-- internal constructor, should not be called externally
 function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string)
     self.janitor = Janitor.new()
 
@@ -45,6 +51,7 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string)
     end))
 
     self.buttonChangedEvent = Instance.new("BindableEvent")
+    -- -- expose the BindableEvent Event for button state updates, fires the name of the button that is not selected
     self.ButtonChanged = self.buttonChangedEvent.Event
 
     self.buttons = {}
@@ -71,6 +78,7 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string)
     end
 end
 
+-- class level Destructor, cleans up all listeners and destroys the class
 function Dropdown:Destroy()
     self.janitor:Destroy()
     setmetatable(self, nil)
