@@ -74,7 +74,6 @@ function DataService:Init()
     Players.PlayerRemoving:Connect(function(player)
         local profile = self.Profiles[player]
         if profile ~= nil and profile.Profile ~= nil then
-            print(profile.Profile)
             profile.Profile:Release()
             self.Profiles[player] = nil
         end

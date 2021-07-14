@@ -12,28 +12,33 @@ local function createEvent(eventName: string, callback)
     e.Parent = game.ReplicatedStorage
 end
 
-local function weldWeapon(character: Model, weapon: Model)
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    local weld = Instance.new("Weld")
-    weld.Part0 = humanoidRootPart
-    weld.Part1 = weapon.PrimaryPart
-    weld.C0 = humanoidRootPart.CFrame
-    weld.C1 = humanoidRootPart.CFrame
-    weld.Parent = humanoidRootPart
+local function weldWeapon(player: Player, character: Model, weapon: Model)
+    local upperTorso = character:WaitForChild("UpperTorso")
 
-    weapon.Parent = character
+    
+    weapon.PrimaryPart.CFrame = CFrame.new(upperTorso.Position)
+    local object = upperTorso.CFrame:ToObjectSpace(weapon.PrimaryPart.CFrame)
+    object += Vector3.new(0, 0, upperTorso.Size.Z/2+.1)
+    weapon.PrimaryPart.CFrame = upperTorso.CFrame:ToWorldSpace(object)
+    for _, part in pairs(weapon:GetChildren()) do
+        part.Orientation = Vector3.new(upperTorso.Orientation.X - 45, upperTorso.Orientation.Y - 90, upperTorso.Orientation.Z)
+    end
+    
+    local weld = Instance.new("WeldConstraint")
+    weld.Parent = upperTorso
+
+    weld.Part0 = upperTorso
+    weld.Part1 = weapon.PrimaryPart
 end
 
-local function scaleWeapon(character: Model, scale: number)
+local function scaleWeapon(player: Player, character: Model, scale: number)
     local weapon = AK47:Clone()
-    print(weapon:GetChildren())
     weapon.PrimaryPart = weapon:WaitForChild("Body")
+    weapon.Parent = character
 
-    ModelUtil.Unweld(weapon)
     ModelUtil.Scale(weapon, scale)
-    ModelUtil.Reweld(weapon)
 
-    weldWeapon(character, weapon)
+    weldWeapon(player, character, weapon)
 end
 
 local PlayerService = {}
@@ -50,17 +55,21 @@ function PlayerService:ScaleCharacter(player: Player, character: Model, scale: n
     bodyWidthScale.Value = scale
     headScale.Value = scale
 
+    if character:FindFirstChild("AK47") then
+        character.AK47:Destroy()
+    end
+
+    scaleWeapon(player, character, scale)
+
     self.DataService:SetScale(player, scale)
 end
 
 function PlayerService:CharacterAdded(player: Player, character: Model)
     self.DataService:GetProfile(player):andThen(function(playerSettings)
-        print(playerSettings)
         local humanoid: Humanoid = character:WaitForChild("Humanoid")
         humanoid.WalkSpeed = playerSettings.WalkSpeed
-        -- self:ScaleCharacter(player, character, playerSettings.CharacterScale)
+        self:ScaleCharacter(player, character, playerSettings.CharacterScale)
     end)
-    scaleWeapon(character, 1)
 end
 
 function PlayerService:Start(services)
