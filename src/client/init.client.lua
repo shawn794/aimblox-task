@@ -12,8 +12,12 @@ end
 -- run their start methods all at once, if they have one, pass the controller list to them
 for _, controller in pairs(controllers) do
     if controller.Start ~= nil then
-        coroutine.wrap(function()
+        local thread = coroutine.create(function()
             controller:Start(controllers)
-        end)()
+        end)
+        local success, err = coroutine.resume(thread)
+        if not success then
+            error(err, 2)
+        end
     end
 end

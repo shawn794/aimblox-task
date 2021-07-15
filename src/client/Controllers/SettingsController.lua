@@ -1,7 +1,12 @@
 local Lighting = game:GetService("Lighting")
 local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")
+local Players = game:GetService("Players")
 
+local ModelUtil = require(game.ReplicatedStorage.Shared.ModelUtil)
+
+local Player = Players.LocalPlayer
 local Ambient = SoundService.Ambient
 
 local GetData: RemoteFunction = game.ReplicatedStorage:WaitForChild("GetData")
@@ -12,7 +17,24 @@ local WalkSpeedEvent: RemoteEvent = game.ReplicatedStorage:WaitForChild("WalkSpe
 local SettingsController = {}
 
 function SettingsController:LocalBrightening(v)
-    Lighting.Brightness = v
+    TweenService:Create(Lighting, TweenInfo.new(0.1), {Brightness = v}):Play()
+end
+
+function SettingsController:LocalScale(s)
+    if Player.Character:FindFirstChild("AK47") then
+        Player.Character.AK47:Destroy()
+    end
+    
+    local humanoid: Humanoid = Player.Character:WaitForChild("Humanoid")
+    local bodyDepthScale: NumberValue = humanoid:WaitForChild("BodyDepthScale")
+    local bodyHeightScale: NumberValue = humanoid:WaitForChild("BodyHeightScale")
+    local bodyWidthScale: NumberValue = humanoid:WaitForChild("BodyWidthScale")
+    local headScale: NumberValue = humanoid:WaitForChild("HeadScale")
+
+    TweenService:Create(bodyDepthScale, TweenInfo.new(0.1), {Value = s}):Play()
+    TweenService:Create(bodyHeightScale, TweenInfo.new(0.1), {Value = s}):Play()
+    TweenService:Create(bodyWidthScale, TweenInfo.new(0.1), {Value = s}):Play()
+    TweenService:Create(headScale, TweenInfo.new(0.1), {Value = s}):Play()
 end
 
 function SettingsController:SetScale(s: number)

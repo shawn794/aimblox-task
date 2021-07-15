@@ -10,6 +10,13 @@ local Player = Players.LocalPlayer
 local UIController = {}
 
 function UIController:CreateDropdowns()
+    local function buttonChange(button: ImageButton, bool: boolean)
+        if bool then
+            TweenService:Create(button.Overlay, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(120, 186, 185)}):Play()
+        else
+            TweenService:Create(button.Overlay, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(32, 50, 49)}):Play()
+        end
+    end
     local walkspeedDropdown = Dropdown.new(self.panel.SettingsList.WalkspeedDropdown, string.format("%.0f",self.data.WalkSpeed))
     walkspeedDropdown.ButtonChanged:Connect(function(button)
         self.settingsController:SetWalkSpeed(tonumber(button))
@@ -17,19 +24,21 @@ function UIController:CreateDropdowns()
 end
 
 function UIController:CreateButtons()
-    local function soundsChange(bool: boolean)
+    local function soundsChange(button: ImageButton, bool: boolean)
+        local overlay = button:WaitForChild("Overlay")
+        local label = button:WaitForChild("TextLabel")
+        overlay.Visible = bool
         if bool then
-            self.panel.SettingsList.Sounds.Button.Overlay.Visible = true
-            self.panel.SettingsList.Sounds.Button.TextLabel.Text = "ON"
+            -- TweenService:Create(overlay, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(120, 186, 185)}):Play()
+            label.Text = "ON"
         else
-            self.panel.SettingsList.Sounds.Button.Overlay.Visible = false
-            self.panel.SettingsList.Sounds.Button.TextLabel.Text = "OFF"
+            -- TweenService:Create(overlay, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(32, 50, 49)}):Play()
+            label.Text = "OFF"
         end
     end
-    soundsChange(self.data.Sounds)
-    local soundsButton = Button.new(self.panel.SettingsList.Sounds.Button, self.data.Sounds)
+    soundsChange(self.panel.SettingsList.Sounds.Button, self.data.Sounds)
+    local soundsButton = Button.new(self.panel.SettingsList.Sounds.Button, self.data.Sounds, soundsChange)
     soundsButton.Changed:Connect(function(bool: boolean)
-        soundsChange(bool)
         self.settingsController:SetSounds(bool)
     end)
 end
@@ -61,11 +70,12 @@ function UIController:CreateSliders()
     self.panel.SettingsList.ScaleSlider.Frame.Level.Text = self.data.CharacterScale
     local scaleSlider = Slider.new(self.panel.SettingsList.ScaleSlider.Frame.Bar, self.data.CharacterScale/50)
     scaleSlider.Changed:Connect(function(value: number)
-        value = tonumber(string.format("%.0f", value * 50))
+        value = tonumber(string.format("%.1f", value * 50))
+        self.settingsController:LocalScale(value)
         self.panel.SettingsList.ScaleSlider.Frame.Level.Text = value
     end)
     scaleSlider.Finished:Connect(function(value: number)
-        value = tonumber(string.format("%.0f", value * 50))
+        value = tonumber(string.format("%.1f", value * 50))
         self.settingsController:SetScale(value)
         self.data = self.settingsController:GetData()
     end)

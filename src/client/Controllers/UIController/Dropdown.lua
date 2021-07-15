@@ -11,14 +11,14 @@ local Dropdown = {}
 Dropdown.__index = Dropdown
 
 -- Creates a new dropdown wrapper
-function Dropdown.new(dropdownContainer: Frame, defaultChoice: string)
+function Dropdown.new(dropdownContainer: Frame, defaultChoice: string, buttonChangeFunction)
     local self = setmetatable({}, Dropdown)
-    self:constructor(dropdownContainer, defaultChoice)
+    self:constructor(dropdownContainer, defaultChoice, buttonChangeFunction)
     return self
 end
 
 -- internal constructor, should not be called externally
-function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string)
+function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string, buttonChangeFunction)
     self.janitor = Janitor.new()
 
     self.container = dropdownContainer
@@ -34,12 +34,14 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string)
         if self.tweening then return end
         self.tweening = true
         if self.open then
+            TweenService:Create(dropdownContainer.Parent, TweenInfo.new(0.75), {CanvasPosition = Vector2.new(0, 0)}):Play()
             TweenService:Create(self.holder, TweenInfo.new(0.75), {Position = UDim2.new(0.5, 0, 0, 0)}):Play()
             local t = TweenService:Create(self.button.Signifier, TweenInfo.new(0.75), {Rotation = 180})
             t:Play()
             t.Completed:Wait()
             self.open = false
         else
+            TweenService:Create(dropdownContainer.Parent, TweenInfo.new(0.75), {CanvasPosition = Vector2.new(0, 170)}):Play()
             TweenService:Create(self.holder, TweenInfo.new(0.75), {Position = UDim2.new(0.5, 0, 1, 0)}):Play()
             local t = TweenService:Create(self.button.Signifier, TweenInfo.new(0.75), {Rotation = 359})
             t:Play()
@@ -59,7 +61,7 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string)
     for _, button in pairs(self.holder:GetChildren()) do
         if button:IsA("ImageButton") then
             local bool = button.Name == defaultChoice
-            local class = Button.new(button, not bool)
+            local class = Button.new(button, not bool, buttonChangeFunction)
             class.Changed:Connect(function(bool)
                 button.Overlay.Visible = bool
                 self.buttonChangedEvent:Fire(button.Name)
