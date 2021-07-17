@@ -17,7 +17,7 @@ local WalkSpeedEvent: RemoteEvent = game.ReplicatedStorage:WaitForChild("WalkSpe
 local SettingsController = {}
 
 function SettingsController:LocalBrightening(v)
-    TweenService:Create(Lighting, TweenInfo.new(0.1), {Brightness = v}):Play()
+    TweenService:Create(Lighting, TweenInfo.new(0.2), {Brightness = v}):Play()
 end
 
 function SettingsController:LocalScale(s)
@@ -39,11 +39,13 @@ function SettingsController:LocalScale(s)
 end
 
 function SettingsController:SetScale(s: number)
-    if Player.Character:FindFirstChild("AK47") then
-        Player.Character.AK47:Destroy()
-    end
     self.data.CharacterScale = s
     ScaleEvent:FireServer(s)
+    delay(0.5, function()
+        if Player.Character:FindFirstChild("AK47") then
+            Player.Character.AK47:Destroy()
+        end
+    end)
 end
 
 function SettingsController:SetBrightness(s: number)

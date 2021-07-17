@@ -43,6 +43,12 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string, b
     self.janitor:Add(self.button.MouseButton1Click:Connect(function()
         if self.tweening then return end
         self.tweening = true
+        local click = coroutine.wrap(function()
+            self.button.Overlay.Visible = false
+            wait(0.1)
+            self.button.Overlay.Visible = true
+        end)
+        click()
         if self.open then
             tween(self.button, TweenInfo.new(0.75), {BackgroundColor3 = BUTTON_ON}):Play()
             tween(self.button.Overlay, TweenInfo.new(0.75), {BackgroundColor3 = OVERLAY_ON}):Play()
