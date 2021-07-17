@@ -7,6 +7,10 @@ local Dropdown = require(script.Dropdown)
 
 local Player = Players.LocalPlayer
 
+local CHARACTER_SCALE_MAX = 50
+local SENSITIVITY_MAX = 10
+local BRIGHTNESS_MAX = 10
+
 local UIController = {}
 
 function UIController:CreateDropdowns()
@@ -45,37 +49,37 @@ end
 
 function UIController:CreateSliders()
     self.panel.SettingsList.BrightnessSlider.Frame.Level.Text = self.data.Brightness
-    local brightnessSlider = Slider.new(self.panel.SettingsList.BrightnessSlider.Frame.Bar, self.data.Brightness/10)
+    local brightnessSlider = Slider.new(self.panel.SettingsList.BrightnessSlider.Frame.Bar, self.data.Brightness/BRIGHTNESS_MAX)
     brightnessSlider.Changed:Connect(function(value: number)
-        value = tonumber(string.format("%.1f", value * 10))
+        value = tonumber(string.format("%.1f", value * BRIGHTNESS_MAX))
         self.panel.SettingsList.BrightnessSlider.Frame.Level.Text = value
         self.settingsController:LocalBrightening(value)
     end)
     brightnessSlider.Finished:Connect(function(value)
-        self.settingsController:SetBrightness(tonumber(string.format("%.1f", value * 10)))
+        self.settingsController:SetBrightness(tonumber(string.format("%.1f", value * BRIGHTNESS_MAX)))
         self.data = self.settingsController:GetData()
     end)
 
     self.panel.SettingsList.SensitivitySlider.Frame.Level.Text = self.data.InputSens
-    local sensitivitySlider = Slider.new(self.panel.SettingsList.SensitivitySlider.Frame.Bar, self.data.InputSens/10)
+    local sensitivitySlider = Slider.new(self.panel.SettingsList.SensitivitySlider.Frame.Bar, self.data.InputSens/SENSITIVITY_MAX)
     sensitivitySlider.Changed:Connect(function(value: number)
-        value = tonumber(string.format("%.0f", value * 10))
+        value = tonumber(string.format("%.0f", value * SENSITIVITY_MAX))
         self.panel.SettingsList.SensitivitySlider.Frame.Level.Text = value
     end)
     sensitivitySlider.Finished:Connect(function(value: number)
-        self.settingsController:SetSens(tonumber(string.format("%.0f", value * 10)))
+        self.settingsController:SetSens(tonumber(string.format("%.0f", value * SENSITIVITY_MAX)))
         self.data = self.settingsController:GetData()
     end)
 
     self.panel.SettingsList.ScaleSlider.Frame.Level.Text = self.data.CharacterScale
-    local scaleSlider = Slider.new(self.panel.SettingsList.ScaleSlider.Frame.Bar, self.data.CharacterScale/50)
+    local scaleSlider = Slider.new(self.panel.SettingsList.ScaleSlider.Frame.Bar, self.data.CharacterScale/CHARACTER_SCALE_MAX)
     scaleSlider.Changed:Connect(function(value: number)
-        value = tonumber(string.format("%.0f", value * 50))
+        value = tonumber(string.format("%.0f", value * CHARACTER_SCALE_MAX))
         self.settingsController:LocalScale(value)
         self.panel.SettingsList.ScaleSlider.Frame.Level.Text = value
     end)
     scaleSlider.Finished:Connect(function(value: number)
-        value = tonumber(string.format("%.0f", value * 50))
+        value = tonumber(string.format("%.0f", value * CHARACTER_SCALE_MAX))
         self.settingsController:SetScale(value)
         self.data = self.settingsController:GetData()
     end)
