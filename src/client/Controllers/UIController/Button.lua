@@ -23,8 +23,6 @@ function Button:constructor(buttonFrame: ImageButton, bool: boolean, changeFunct
     self.bool = bool
 
     self.button = buttonFrame
-    self.currentButtonColor = self.button.BackgroundColor3
-    self.currentOverlayColor = self.button.Overlay.BackgroundColor3
     self.changeFunction = changeFunction
 
     self.changedEvent = Instance.new("BindableEvent")
@@ -36,8 +34,6 @@ function Button:constructor(buttonFrame: ImageButton, bool: boolean, changeFunct
         if changeFunction ~= nil then
             changeFunction(self.button, self.bool)
         end
-        self.currentButtonColor = self.button.BackgroundColor3
-        self.currentOverlayColor = self.button.Overlay.BackgroundColor3
         SoundService.Button:Play()
         self.changedEvent:Fire(self.bool)
     end))
@@ -45,20 +41,10 @@ function Button:constructor(buttonFrame: ImageButton, bool: boolean, changeFunct
     self.janitor:Add(buttonFrame.MouseEnter:Connect(function()
         local internalJanitor = Janitor.new()
 
-        self.currentButtonColor = self.button.BackgroundColor3
-        self.currentOverlayColor = self.button.Overlay.BackgroundColor3
-
-        local previousButtonColor = buttonFrame.BackgroundColor3
-        local lerpedButtonColor = previousButtonColor:Lerp(Color3.fromRGB(25, 25, 25), 0.25)
-        TweenService:Create(buttonFrame, TweenInfo.new(0.25), {BackgroundColor3 = lerpedButtonColor}):Play()
-
-        local previousOverlayColor = buttonFrame.Overlay.BackgroundColor3
-        local lerpedOverlayColor = previousOverlayColor:Lerp(Color3.fromRGB(25, 25, 25), 0.25)
-        TweenService:Create(buttonFrame.Overlay, TweenInfo.new(0.25), {BackgroundColor3 = lerpedOverlayColor}):Play()
+        TweenService:Create(self.button.Highlight, TweenInfo.new(0.5), {BackgroundTransparency = 0.7}):Play()
 
         internalJanitor:Add(buttonFrame.MouseLeave:Connect(function()
-            TweenService:Create(buttonFrame, TweenInfo.new(0.25), {BackgroundColor3 = self.currentButtonColor}):Play()
-            TweenService:Create(buttonFrame.Overlay, TweenInfo.new(0.25), {BackgroundColor3 = self.currentOverlayColor}):Play()
+            TweenService:Create(self.button.Highlight, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
             internalJanitor:Destroy()
         end))
     end))
