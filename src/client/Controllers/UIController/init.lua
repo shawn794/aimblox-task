@@ -1,5 +1,6 @@
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local SoundService = game:GetService("SoundService")
 
 local Slider = require(script.Slider)
 local Button = require(script.Button)
@@ -16,6 +17,16 @@ local OVERLAY_ON = Color3.fromRGB(120, 186, 185)
 
 local BUTTON_OFF = Color3.fromRGB(134, 87, 88)
 local BUTTON_ON = Color3.fromRGB(87, 134, 133)
+
+local function tick()
+    local sound = SoundService.Tick:Clone()
+    sound.Name = "notTick"
+    sound.Parent = SoundService
+    delay(0.4, function()
+        sound:Destroy()
+    end)
+    sound:Play()
+end
 
 local UIController = {}
 
@@ -70,6 +81,9 @@ function UIController:CreateSliders()
     local brightnessSlider = Slider.new(self.panel.SettingsList.BrightnessSlider.Frame.Bar, self.data.Brightness/BRIGHTNESS_MAX)
     brightnessSlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.1f", value * BRIGHTNESS_MAX))
+        if tostring(value) ~= self.panel.SettingsList.BrightnessSlider.Frame.Level.Text then
+            tick()
+        end
         self.panel.SettingsList.BrightnessSlider.Frame.Level.Text = value
         self.settingsController:LocalBrightening(value)
     end)
@@ -82,6 +96,9 @@ function UIController:CreateSliders()
     local sensitivitySlider = Slider.new(self.panel.SettingsList.SensitivitySlider.Frame.Bar, self.data.InputSens/SENSITIVITY_MAX)
     sensitivitySlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.0f", value * SENSITIVITY_MAX))
+        if tostring(value) ~= self.panel.SettingsList.SensitivitySlider.Frame.Level.Text then
+            tick()
+        end
         self.panel.SettingsList.SensitivitySlider.Frame.Level.Text = value
     end)
     sensitivitySlider.Finished:Connect(function(value: number)
@@ -93,6 +110,9 @@ function UIController:CreateSliders()
     local scaleSlider = Slider.new(self.panel.SettingsList.ScaleSlider.Frame.Bar, self.data.CharacterScale/CHARACTER_SCALE_MAX)
     scaleSlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.0f", value * CHARACTER_SCALE_MAX))
+        if tostring(value) ~= self.panel.SettingsList.ScaleSlider.Frame.Level.Text then
+            tick()
+        end
         self.settingsController:LocalScale(value)
         self.panel.SettingsList.ScaleSlider.Frame.Level.Text = value
     end)
