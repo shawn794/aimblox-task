@@ -4,15 +4,39 @@ local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")
 local Players = game:GetService("Players")
 
-local ModelUtil = require(game.ReplicatedStorage.Shared.ModelUtil)
+local Scaler = require(game.ReplicatedStorage.Shared.Scaler)
 
 local Player = Players.LocalPlayer
 local Ambient = SoundService.Ambient
+local AK47 = game.ReplicatedStorage.AK47
 
 local GetData: RemoteFunction = game.ReplicatedStorage:WaitForChild("GetData")
 local UpdateSettings: RemoteFunction = game.ReplicatedStorage:WaitForChild("UpdateSettings")
 local ScaleEvent: RemoteEvent = game.ReplicatedStorage:WaitForChild("ScaleEvent")
 local WalkSpeedEvent: RemoteEvent = game.ReplicatedStorage:WaitForChild("WalkSpeedEvent")
+
+local function weldWeapon(character: Model, weapon: Model)
+    local upperTorso = character:WaitForChild("UpperTorso")
+
+    weapon.PrimaryPart.CFrame = CFrame.new(Vector3.new(0, 0, upperTorso.Size.Z/2+.1)) * CFrame.fromOrientation(math.rad(45), math.rad(90), 0)
+    weapon.PrimaryPart.CFrame = upperTorso.CFrame:ToWorldSpace(weapon.PrimaryPart.CFrame)
+    
+    local weld = Instance.new("WeldConstraint")
+    weld.Parent = upperTorso
+
+    weld.Part0 = upperTorso
+    weld.Part1 = weapon.PrimaryPart
+end
+
+local function scaleWeapon(character: Model, scale: number)
+    local weapon = AK47:Clone()
+    weapon.PrimaryPart = weapon:WaitForChild("Body")
+    weapon.Parent = character
+
+    Scaler.scaleModel(weapon, scale)
+
+    weldWeapon(character, weapon)
+end
 
 local SettingsController = {}
 
@@ -23,6 +47,7 @@ end
 function SettingsController:LocalScale(s)
     if Player.Character:FindFirstChild("AK47") then
         Player.Character.AK47:Destroy()
+        scaleWeapon(Player.Character, s)
     end
     
     local humanoid: Humanoid = Player.Character:WaitForChild("Humanoid")
@@ -38,6 +63,9 @@ function SettingsController:LocalScale(s)
 end
 
 function SettingsController:SetScale(s: number)
+    if Player.Character:FindFirstChild("AK47") then
+        Player.Character.AK47:Destroy()
+    end
     self.data.CharacterScale = s
     ScaleEvent:FireServer(s)
 end

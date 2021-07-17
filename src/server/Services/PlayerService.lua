@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ModelUtil = require(ReplicatedStorage.Shared.ModelUtil)
+local Scaler = require(ReplicatedStorage.Shared.Scaler)
 
 local AK47 = ReplicatedStorage.AK47
 
@@ -15,13 +15,8 @@ end
 local function weldWeapon(character: Model, weapon: Model)
     local upperTorso = character:WaitForChild("UpperTorso")
 
-    weapon.PrimaryPart.CFrame = CFrame.new(upperTorso.Position)
-    local object = upperTorso.CFrame:ToObjectSpace(weapon.PrimaryPart.CFrame)
-    object += Vector3.new(0, 0, upperTorso.Size.Z/2+.1)
-    weapon.PrimaryPart.CFrame = upperTorso.CFrame:ToWorldSpace(object)
-    for _, part in pairs(weapon:GetChildren()) do
-        part.Orientation = Vector3.new(upperTorso.Orientation.X - 45, upperTorso.Orientation.Y - 90, upperTorso.Orientation.Z)
-    end
+    weapon.PrimaryPart.CFrame = CFrame.new(Vector3.new(0, 0, upperTorso.Size.Z/2+.1)) * CFrame.fromOrientation(math.rad(45), math.rad(90), 0)
+    weapon.PrimaryPart.CFrame = upperTorso.CFrame:ToWorldSpace(weapon.PrimaryPart.CFrame)
     
     local weld = Instance.new("WeldConstraint")
     weld.Parent = upperTorso
@@ -35,7 +30,7 @@ local function scaleWeapon(character: Model, scale: number)
     weapon.PrimaryPart = weapon:WaitForChild("Body")
     weapon.Parent = character
 
-    ModelUtil.Scale(weapon, scale)
+    Scaler.scaleModel(weapon, scale)
 
     weldWeapon(character, weapon)
 end
@@ -48,6 +43,8 @@ function PlayerService:ScaleCharacter(player: Player, character: Model, scale: n
     local bodyHeightScale: NumberValue = humanoid:WaitForChild("BodyHeightScale")
     local bodyWidthScale: NumberValue = humanoid:WaitForChild("BodyWidthScale")
     local headScale: NumberValue = humanoid:WaitForChild("HeadScale")
+
+    if scale > 50 then scale = 50 end
 
     bodyDepthScale.Value = scale
     bodyHeightScale.Value = scale
