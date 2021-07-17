@@ -48,6 +48,7 @@ function Slider:constructor(bar: Frame, defaultPosition: number)
         local mousePosition = UserInputService:GetMouseLocation()
         self.fill.Size = UDim2.new(0, mousePosition.X - self.barAbsolutePosition.X, 1, 0)
         self.dragger.Position = UDim2.new(0, mousePosition.X - self.barAbsolutePosition.X, .5, 0)
+        self.dragger.Detail.ImageColor3 = Color3.fromRGB(125, 125, 125)
         self.mouseDown = true
     end))
 
@@ -55,6 +56,7 @@ function Slider:constructor(bar: Frame, defaultPosition: number)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             if self.mouseDown then
                 self.mouseDown = false
+                self.dragger.Detail.ImageColor3 = Color3.new(1, 1, 1)
                 self.finishedEvent:Fire(self.fill.AbsoluteSize.X / self.barAbsoluteSize.X)
             end
         end

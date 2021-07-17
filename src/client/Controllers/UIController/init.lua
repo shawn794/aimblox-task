@@ -11,17 +11,27 @@ local CHARACTER_SCALE_MAX = 50
 local SENSITIVITY_MAX = 10
 local BRIGHTNESS_MAX = 10
 
+local OVERLAY_OFF = Color3.fromRGB(186, 120, 121)
+local OVERLAY_ON = Color3.fromRGB(120, 186, 185)
+
+local BUTTON_OFF = Color3.fromRGB(134, 87, 88)
+local BUTTON_ON = Color3.fromRGB(87, 134, 133)
+
 local UIController = {}
 
 function UIController:CreateDropdowns()
     local function buttonChange(button: ImageButton, bool: boolean)
+        local overlay = button:WaitForChild("Overlay")
+
         if bool then
-            TweenService:Create(button.Overlay, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(120, 186, 185)}):Play()
+            TweenService:Create(overlay, TweenInfo.new(0.1), {BackgroundColor3 = OVERLAY_ON}):Play()
+            TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = BUTTON_ON}):Play()
         else
-            TweenService:Create(button.Overlay, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(32, 50, 49)}):Play()
+            TweenService:Create(overlay, TweenInfo.new(0.1), {BackgroundColor3 = OVERLAY_OFF}):Play()
+            TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = BUTTON_OFF}):Play()
         end
     end
-    local walkspeedDropdown = Dropdown.new(self.panel.SettingsList.WalkspeedDropdown, string.format("%.0f",self.data.WalkSpeed))
+    local walkspeedDropdown = Dropdown.new(self.panel.SettingsList.WalkspeedDropdown, string.format("%.0f",self.data.WalkSpeed), buttonChange)
     walkspeedDropdown.ButtonChanged:Connect(function(button)
         self.settingsController:SetWalkSpeed(tonumber(button))
     end)
@@ -31,12 +41,20 @@ function UIController:CreateButtons()
     local function soundsChange(button: ImageButton, bool: boolean)
         local overlay = button:WaitForChild("Overlay")
         local label = button:WaitForChild("TextLabel")
-        overlay.Visible = bool
+        -- overlay.Visible = bool
+        local click = coroutine.wrap(function()
+            overlay.Visible = false
+            wait(0.1)
+            overlay.Visible = true
+        end)
+        click()
         if bool then
-            -- TweenService:Create(overlay, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(120, 186, 185)}):Play()
+            TweenService:Create(overlay, TweenInfo.new(0.1), {BackgroundColor3 = OVERLAY_ON}):Play()
+            TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = BUTTON_ON}):Play()
             label.Text = "ON"
         else
-            -- TweenService:Create(overlay, TweenInfo.new(0.5), {BackgroundColor3 = Color3.fromRGB(32, 50, 49)}):Play()
+            TweenService:Create(overlay, TweenInfo.new(0.1), {BackgroundColor3 = OVERLAY_OFF}):Play()
+            TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = BUTTON_OFF}):Play()
             label.Text = "OFF"
         end
     end
