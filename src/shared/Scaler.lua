@@ -19,5 +19,5 @@ local function scaleModel(model, scale)
 end
 
 return {
-	scaleModel = scaleModel,
+	ScaleModel = scaleModel,
 }
