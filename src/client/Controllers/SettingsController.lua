@@ -11,7 +11,7 @@ local Ambient = SoundService.Ambient
 
 local GetData: RemoteFunction = game.ReplicatedStorage:WaitForChild("GetData")
 local UpdateSettings: RemoteFunction = game.ReplicatedStorage:WaitForChild("UpdateSettings")
-local ScaleEvent: RemoteEvent = game.ReplicatedStorage:WaitForChild("ScaleEvent")
+local ScaleEvent: RemoteFunction = game.ReplicatedStorage:WaitForChild("ScaleEvent")
 local WalkSpeedEvent: RemoteEvent = game.ReplicatedStorage:WaitForChild("WalkSpeedEvent")
 
 local SettingsController = {}
@@ -40,12 +40,11 @@ end
 
 function SettingsController:SetScale(s: number)
     self.data.CharacterScale = s
-    ScaleEvent:FireServer(s)
-    delay(0.5, function()
-        if Player.Character:FindFirstChild("AK47") then
-            Player.Character.AK47:Destroy()
-        end
-    end)
+    local clientAK = Player.Character:FindFirstChild("AK47")
+    ScaleEvent:InvokeServer(s)
+    if clientAK ~= nil then
+        clientAK:Destroy()
+    end
 end
 
 function SettingsController:SetBrightness(s: number)

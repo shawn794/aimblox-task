@@ -10,6 +10,13 @@ local function createEvent(eventName: string, callback)
     e.Parent = game.ReplicatedStorage
 end
 
+local function createRemoteFunction(functionName: string, callback)
+    local e = Instance.new("RemoteFunction")
+    e.Name = functionName
+    e.OnServerInvoke = callback
+    e.Parent = game.ReplicatedStorage
+end
+
 local PlayerService = {}
 
 function PlayerService:ScaleCharacter(player: Player, character: Model, scale: number)
@@ -33,6 +40,7 @@ function PlayerService:ScaleCharacter(player: Player, character: Model, scale: n
     Util.ScaleWeapon(character, scale)
 
     self.DataService:SetScale(player, scale)
+    return true
 end
 
 function PlayerService:CharacterAdded(player: Player, character: Model)
@@ -52,8 +60,8 @@ function PlayerService:Start(services)
         end)
     end)
 
-    createEvent("ScaleEvent", function(player: Player, scale: number)
-        self:ScaleCharacter(player, player.Character, scale)
+    createRemoteFunction("ScaleEvent", function(player: Player, scale: number)
+        return self:ScaleCharacter(player, player.Character, scale)
     end)
 
     createEvent("WalkSpeedEvent", function(player: Player, speed: number)

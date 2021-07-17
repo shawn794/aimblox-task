@@ -1,4 +1,5 @@
 local TweenService = game:GetService("TweenService")
+local SoundService = game:GetService("SoundService")
 
 local Janitor = require(game.ReplicatedStorage.Shared.Janitor)
 local Button = require(script.Parent.Button)
@@ -49,6 +50,7 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string, b
             self.button.Overlay.Visible = true
         end)
         click()
+        SoundService.Button:Play()
         if self.open then
             tween(self.button, TweenInfo.new(0.75), {BackgroundColor3 = BUTTON_ON}):Play()
             tween(self.button.Overlay, TweenInfo.new(0.75), {BackgroundColor3 = OVERLAY_ON}):Play()
@@ -91,6 +93,7 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string, b
                     overlay.Visible = true
                 end)
                 click()
+                buttonChangeFunction(button, false)
 
                 self.buttonChangedEvent:Fire(button.Name)
 

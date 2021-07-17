@@ -1,5 +1,6 @@
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
 
 local Janitor = require(game.ReplicatedStorage.Shared.Janitor)
 
@@ -78,6 +79,7 @@ function Slider:constructor(bar: Frame, defaultPosition: number)
                 self.dragger.Position = UDim2.new(0, mousePosition.X - self.barAbsolutePosition.X, .5, 0)
             end
 
+            SoundService.Tick:Play()
             self.changedEvent:Fire(self.fill.AbsoluteSize.X / self.barAbsoluteSize.X)
         end
     end))
