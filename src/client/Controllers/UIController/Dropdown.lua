@@ -74,6 +74,17 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string, b
         self.tweening = false
     end))
 
+    self.janitor:Add(self.button.MouseEnter:Connect(function()
+        local internalJanitor = Janitor.new()
+
+        TweenService:Create(self.button.Highlight, TweenInfo.new(0.5), {BackgroundTransparency = 0.7}):Play()
+
+        internalJanitor:Add(self.button.MouseLeave:Connect(function()
+            TweenService:Create(self.button.Highlight, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+            internalJanitor:Destroy()
+        end))
+    end))
+
     self.buttonChangedEvent = Instance.new("BindableEvent")
     -- -- expose the BindableEvent Event for button state updates, fires the name of the button that is not selected
     self.ButtonChanged = self.buttonChangedEvent.Event
