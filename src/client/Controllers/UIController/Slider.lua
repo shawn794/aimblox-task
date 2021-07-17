@@ -1,7 +1,11 @@
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 
 local Janitor = require(game.ReplicatedStorage.Shared.Janitor)
+
+local HOVER_COLOR = Color3.fromRGB(255, 250, 180)
+local FILL_COLOR = Color3.fromRGB(120, 186, 185)
 
 --[[
     PascalCase methods and variables are public, camelCase methods and variables are private (except for new)
@@ -50,6 +54,14 @@ function Slider:constructor(bar: Frame, defaultPosition: number)
         self.dragger.Position = UDim2.new(0, mousePosition.X - self.barAbsolutePosition.X, .5, 0)
         self.dragger.Detail.ImageColor3 = Color3.fromRGB(125, 125, 125)
         self.mouseDown = true
+    end))
+
+    self.janitor:Add(self.dragger.MouseEnter:Connect(function()
+        TweenService:Create(self.fill, TweenInfo.new(0.5), {ImageColor3 = HOVER_COLOR}):Play()
+    end))
+
+    self.janitor:Add(self.dragger.MouseLeave:Connect(function()
+        TweenService:Create(self.fill, TweenInfo.new(0.5), {ImageColor3 = FILL_COLOR}):Play()
     end))
 
     self.janitor:Add(UserInputService.InputEnded:Connect(function(input, _)
