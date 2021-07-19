@@ -11,14 +11,14 @@ local Button = {}
 Button.__index = Button
 
 -- Creates a new button wrapper
-function Button.new(buttonFrame: ImageButton, bool: boolean, changeFunction)
+function Button.new(buttonFrame: ImageButton, bool: boolean, playSound: ()->bool, changeFunction)
     local self = setmetatable({}, Button)
-    self:constructor(buttonFrame, bool, changeFunction)
+    self:constructor(buttonFrame, bool, playSound, changeFunction)
     return self
 end
 
 -- internal constructor, should not be called externally
-function Button:constructor(buttonFrame: ImageButton, bool: boolean, changeFunction)
+function Button:constructor(buttonFrame: ImageButton, bool: boolean, playSound: ()->bool, changeFunction)
     self.janitor = Janitor.new()
     self.bool = bool
 
@@ -34,7 +34,9 @@ function Button:constructor(buttonFrame: ImageButton, bool: boolean, changeFunct
         if changeFunction ~= nil then
             changeFunction(self.button, self.bool)
         end
-        SoundService.Button:Play()
+        if playSound() then
+            SoundService.Button:Play()
+        end
         self.changedEvent:Fire(self.bool)
     end))
 

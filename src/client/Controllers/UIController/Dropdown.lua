@@ -22,14 +22,14 @@ local Dropdown = {}
 Dropdown.__index = Dropdown
 
 -- Creates a new dropdown wrapper
-function Dropdown.new(dropdownContainer: Frame, defaultChoice: string, buttonChangeFunction)
+function Dropdown.new(dropdownContainer: Frame, defaultChoice: string, playSounds: () -> bool, buttonChangeFunction)
     local self = setmetatable({}, Dropdown)
-    self:constructor(dropdownContainer, defaultChoice, buttonChangeFunction)
+    self:constructor(dropdownContainer, defaultChoice, playSounds, buttonChangeFunction)
     return self
 end
 
 -- internal constructor, should not be called externally
-function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string, buttonChangeFunction)
+function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string, playSounds, buttonChangeFunction)
     self.janitor = Janitor.new()
 
     self.container = dropdownContainer
@@ -50,7 +50,9 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string, b
             self.button.Overlay.Visible = true
         end)
         click()
-        SoundService.Button:Play()
+        if playSounds() then
+            SoundService.Button:Play()
+        end
         if self.open then
             tween(self.button, TweenInfo.new(0.75), {BackgroundColor3 = BUTTON_ON}):Play()
             tween(self.button.Overlay, TweenInfo.new(0.75), {BackgroundColor3 = OVERLAY_ON}):Play()
@@ -96,7 +98,7 @@ function Dropdown:constructor(dropdownContainer: Frame, defaultChoice: string, b
             local overlay = button:WaitForChild("Overlay")
             local bool = button.Name == defaultChoice
             -- pass not bool, as we want the selected ones to look like the false equivalent            
-            local class = Button.new(button, not bool, buttonChangeFunction)
+            local class = Button.new(button, not bool, playSounds, buttonChangeFunction)
             class.Changed:Connect(function(bool)
                 local click = coroutine.wrap(function()
                     overlay.Visible = false

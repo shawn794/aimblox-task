@@ -42,13 +42,29 @@ function UIController:CreateDropdowns()
             TweenService:Create(button, TweenInfo.new(0.1), {BackgroundColor3 = BUTTON_OFF}):Play()
         end
     end
-    local walkspeedDropdown = Dropdown.new(self.panel.SettingsList.WalkspeedDropdown, string.format("%.0f",self.data.WalkSpeed), buttonChange)
+    local walkspeedDropdown = Dropdown.new(self.panel.SettingsList.WalkspeedDropdown, string.format("%.0f",self.data.WalkSpeed), function() return self.data.Sounds end, buttonChange)
     walkspeedDropdown.ButtonChanged:Connect(function(button)
         self.settingsController:SetWalkSpeed(tonumber(button))
     end)
 end
 
 function UIController:CreateButtons()
+    local openButton = Button.new(self.open, true, function()
+        return self.data.Sounds
+    end)
+    openButton.Changed:Connect(function()
+        TweenService:Create(self.panel, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
+        TweenService:Create(self.open, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.995, 0, 1.295, 0)}):Play()
+    end)
+
+    local exitButton = Button.new(self.panel.Exit, true, function()
+        return self.data.Sounds
+    end)
+    exitButton.Changed:Connect(function()
+        TweenService:Create(self.panel, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.5, 0, 1.5, 0)}):Play()
+        TweenService:Create(self.open, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.995, 0, 0.995, 0)}):Play()
+    end)
+    
     local function soundsChange(button: ImageButton, bool: boolean)
         local overlay = button:WaitForChild("Overlay")
         local label = button:WaitForChild("TextLabel")
@@ -70,7 +86,9 @@ function UIController:CreateButtons()
         end
     end
     soundsChange(self.panel.SettingsList.Sounds.Button, self.data.Sounds)
-    local soundsButton = Button.new(self.panel.SettingsList.Sounds.Button, self.data.Sounds, soundsChange)
+    local soundsButton = Button.new(self.panel.SettingsList.Sounds.Button, self.data.Sounds, function()
+        return self.data.Sounds
+    end, soundsChange)
     soundsButton.Changed:Connect(function(bool: boolean)
         self.settingsController:SetSounds(bool)
     end)
@@ -82,7 +100,9 @@ function UIController:CreateSliders()
     brightnessSlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.1f", value * BRIGHTNESS_MAX))
         if tostring(value) ~= self.panel.SettingsList.BrightnessSlider.Frame.Level.Text then
-            tick()
+            if self.data.Sounds then
+                tick()
+            end
         end
         self.panel.SettingsList.BrightnessSlider.Frame.Level.Text = value
         self.settingsController:LocalBrightening(value)
@@ -97,7 +117,9 @@ function UIController:CreateSliders()
     sensitivitySlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.0f", value * SENSITIVITY_MAX))
         if tostring(value) ~= self.panel.SettingsList.SensitivitySlider.Frame.Level.Text then
-            tick()
+            if self.data.Sounds then
+                tick()
+            end
         end
         self.panel.SettingsList.SensitivitySlider.Frame.Level.Text = value
     end)
@@ -111,7 +133,9 @@ function UIController:CreateSliders()
     scaleSlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.0f", value * CHARACTER_SCALE_MAX))
         if tostring(value) ~= self.panel.SettingsList.ScaleSlider.Frame.Level.Text then
-            tick()
+            if self.data.Sounds then
+                tick()
+            end
         end
         self.settingsController:LocalScale(value)
         self.panel.SettingsList.ScaleSlider.Frame.Level.Text = value
@@ -124,28 +148,16 @@ function UIController:CreateSliders()
 end
 
 function UIController:Start(controllers)
-    self.data = controllers.SettingsController:GetData()
-    self.settingsController = controllers.SettingsController
-    self:CreateSliders()
-    self:CreateButtons()
-    self:CreateDropdowns()
-end
-
-function UIController:Init()
     self.playerGui = Player.PlayerGui
     self.gui = self.playerGui:WaitForChild("Display")
     self.panel = self.gui.Settings.Panel
     self.open = self.gui.Settings.OpenSettings
+    self.data = controllers.SettingsController:GetData()
+    self.settingsController = controllers.SettingsController
 
-    self.open.MouseButton1Click:Connect(function()
-        TweenService:Create(self.panel, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
-        TweenService:Create(self.open, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.995, 0, 1.295, 0)}):Play()
-    end)
-
-    self.panel.Exit.MouseButton1Click:Connect(function()
-        TweenService:Create(self.panel, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.5, 0, 1.5, 0)}):Play()
-        TweenService:Create(self.open, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.995, 0, 0.995, 0)}):Play()
-    end)
+    self:CreateButtons()
+    self:CreateSliders()
+    self:CreateDropdowns()
 end
 
 return UIController
