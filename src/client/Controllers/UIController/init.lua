@@ -31,6 +31,7 @@ end
 local UIController = {}
 
 function UIController:CreateDropdowns()
+    -- runs every time one of the buttons are clicked within the dropdown
     local function buttonChange(button: ImageButton, bool: boolean)
         local overlay = button:WaitForChild("Overlay")
 
@@ -52,6 +53,7 @@ function UIController:CreateButtons()
     local openButton = Button.new(self.open, true, function()
         return self.data.Sounds
     end)
+    -- open settings menu
     openButton.Changed:Connect(function()
         TweenService:Create(self.panel, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.5, 0, 0.5, 0)}):Play()
         TweenService:Create(self.open, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.995, 0, 1.295, 0)}):Play()
@@ -60,11 +62,13 @@ function UIController:CreateButtons()
     local exitButton = Button.new(self.panel.Exit, true, function()
         return self.data.Sounds
     end)
+    -- close settings menu
     exitButton.Changed:Connect(function()
         TweenService:Create(self.panel, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.5, 0, 1.5, 0)}):Play()
         TweenService:Create(self.open, TweenInfo.new(1, Enum.EasingStyle.Back), {Position = UDim2.new(0.995, 0, 0.995, 0)}):Play()
     end)
     
+    -- runs when our button is clicked
     local function soundsChange(button: ImageButton, bool: boolean)
         local overlay = button:WaitForChild("Overlay")
         local label = button:WaitForChild("TextLabel")
@@ -97,8 +101,10 @@ end
 function UIController:CreateSliders()
     self.brightnessSlider.Frame.Level.Text = self.data.Brightness
     local brightnessSlider = Slider.new(self.brightnessSlider.Frame.Bar, self.data.Brightness/BRIGHTNESS_MAX)
+    -- connect here to determine if we need to update the ui, and to local client sided changes
     brightnessSlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.1f", value * BRIGHTNESS_MAX))
+        -- needs to be significant UX change to play the sound, better to externalize this for now 
         if tostring(value) ~= self.brightnessSlider.Frame.Level.Text then
             if self.data.Sounds then
                 tick()
@@ -114,8 +120,10 @@ function UIController:CreateSliders()
 
     self.sensSlider.Frame.Level.Text = self.data.InputSens
     local sensitivitySlider = Slider.new(self.sensSlider.Frame.Bar, self.data.InputSens/SENSITIVITY_MAX)
+    -- connect here to determine if we need to update the ui, and to local client sided changes
     sensitivitySlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.0f", value * SENSITIVITY_MAX))
+        -- needs to be significant UX change to play the sound, better to externalize this for now 
         if tostring(value) ~= self.sensSlider.Frame.Level.Text then
             if self.data.Sounds then
                 tick()
@@ -130,8 +138,10 @@ function UIController:CreateSliders()
 
     self.scaleSlider.Frame.Level.Text = self.data.CharacterScale
     local scaleSlider = Slider.new(self.scaleSlider.Frame.Bar, self.data.CharacterScale/CHARACTER_SCALE_MAX)
+    -- connect here to determine if we need to update the ui, and to local client sided changes
     scaleSlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.0f", value * CHARACTER_SCALE_MAX))
+        -- needs to be significant UX change to play the sound, better to externalize this for now 
         if tostring(value) ~= self.scaleSlider.Frame.Level.Text then
             if self.data.Sounds then
                 tick()

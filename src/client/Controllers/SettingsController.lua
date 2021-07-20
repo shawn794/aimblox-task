@@ -70,6 +70,7 @@ function SettingsController:SetSens(s: number)
     UpdateSettings:InvokeServer(self.data)
 end
 
+-- getter method, rather than having the other modules access the data directly
 function SettingsController:GetData()
     return self.data
 end

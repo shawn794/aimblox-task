@@ -18,14 +18,17 @@ end
 
 local DataService = { Profiles = {} }
 
+-- public setscale method for playerservice to use
 function DataService:SetScale(player: Player, scale: number)
     self.Profiles[player].Profile.Data.CharacterScale = scale
 end
 
+-- public setwalkspeed method for playerservice
 function DataService:SetWalkSpeed(player: Player, speed: number)
     self.Profiles[player].Profile.Data.WalkSpeed = speed
 end
 
+-- return a promise of a profile, to make sure that the profile is fully loaded. i believe this is could be replaced by a monad, but a promise was a bit quicker
 function DataService:GetProfile(player: Player)
     return Promise.new(function(resolve, reject)
         local profile = self.Profiles[player]
@@ -37,6 +40,7 @@ function DataService:GetProfile(player: Player)
     end)
 end
 
+-- basic profile service player added function
 function DataService:PlayerAdded(player: Player)
     -- get player saved data
     print("Awaiting Profile for "..player.Name)
