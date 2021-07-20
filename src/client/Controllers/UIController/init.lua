@@ -95,16 +95,16 @@ function UIController:CreateButtons()
 end
 
 function UIController:CreateSliders()
-    self.panel.SettingsList.BrightnessSlider.Frame.Level.Text = self.data.Brightness
-    local brightnessSlider = Slider.new(self.panel.SettingsList.BrightnessSlider.Frame.Bar, self.data.Brightness/BRIGHTNESS_MAX)
+    self.brightnessSlider.Frame.Level.Text = self.data.Brightness
+    local brightnessSlider = Slider.new(self.brightnessSlider.Frame.Bar, self.data.Brightness/BRIGHTNESS_MAX)
     brightnessSlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.1f", value * BRIGHTNESS_MAX))
-        if tostring(value) ~= self.panel.SettingsList.BrightnessSlider.Frame.Level.Text then
+        if tostring(value) ~= self.brightnessSlider.Frame.Level.Text then
             if self.data.Sounds then
                 tick()
             end
         end
-        self.panel.SettingsList.BrightnessSlider.Frame.Level.Text = value
+        self.brightnessSlider.Frame.Level.Text = value
         self.settingsController:LocalBrightening(value)
     end)
     brightnessSlider.Finished:Connect(function(value)
@@ -112,33 +112,33 @@ function UIController:CreateSliders()
         self.data = self.settingsController:GetData()
     end)
 
-    self.panel.SettingsList.SensitivitySlider.Frame.Level.Text = self.data.InputSens
-    local sensitivitySlider = Slider.new(self.panel.SettingsList.SensitivitySlider.Frame.Bar, self.data.InputSens/SENSITIVITY_MAX)
+    self.sensSlider.Frame.Level.Text = self.data.InputSens
+    local sensitivitySlider = Slider.new(self.sensSlider.Frame.Bar, self.data.InputSens/SENSITIVITY_MAX)
     sensitivitySlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.0f", value * SENSITIVITY_MAX))
-        if tostring(value) ~= self.panel.SettingsList.SensitivitySlider.Frame.Level.Text then
+        if tostring(value) ~= self.sensSlider.Frame.Level.Text then
             if self.data.Sounds then
                 tick()
             end
         end
-        self.panel.SettingsList.SensitivitySlider.Frame.Level.Text = value
+        self.sensSlider.Frame.Level.Text = value
     end)
     sensitivitySlider.Finished:Connect(function(value: number)
         self.settingsController:SetSens(tonumber(string.format("%.0f", value * SENSITIVITY_MAX)))
         self.data = self.settingsController:GetData()
     end)
 
-    self.panel.SettingsList.ScaleSlider.Frame.Level.Text = self.data.CharacterScale
-    local scaleSlider = Slider.new(self.panel.SettingsList.ScaleSlider.Frame.Bar, self.data.CharacterScale/CHARACTER_SCALE_MAX)
+    self.scaleSlider.Frame.Level.Text = self.data.CharacterScale
+    local scaleSlider = Slider.new(self.scaleSlider.Frame.Bar, self.data.CharacterScale/CHARACTER_SCALE_MAX)
     scaleSlider.Changed:Connect(function(value: number)
         value = tonumber(string.format("%.0f", value * CHARACTER_SCALE_MAX))
-        if tostring(value) ~= self.panel.SettingsList.ScaleSlider.Frame.Level.Text then
+        if tostring(value) ~= self.scaleSlider.Frame.Level.Text then
             if self.data.Sounds then
                 tick()
             end
         end
         self.settingsController:LocalScale(value)
-        self.panel.SettingsList.ScaleSlider.Frame.Level.Text = value
+        self.scaleSlider.Frame.Level.Text = value
     end)
     scaleSlider.Finished:Connect(function(value: number)
         value = tonumber(string.format("%.0f", value * CHARACTER_SCALE_MAX))
@@ -152,6 +152,9 @@ function UIController:Start(controllers)
     self.gui = self.playerGui:WaitForChild("Display")
     self.panel = self.gui.Settings.Panel
     self.open = self.gui.Settings.OpenSettings
+    self.scaleSlider = self.panel.SettingsList.ScaleSlider
+    self.sensSlider = self.panel.SettingsList.SensitivitySlider
+    self.brightnessSlider = self.panel.SettingsList.BrightnessSlider
     self.data = controllers.SettingsController:GetData()
     self.settingsController = controllers.SettingsController
 
